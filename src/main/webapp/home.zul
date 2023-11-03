@@ -1,0 +1,46 @@
+<zk>
+    <style>
+        .grid {
+        display: grid;
+        grid-template-columns: 2fr;
+        grid-template-rows: auto auto;
+        }
+        .grid > div {
+        border: 2px solid #7EC6FE;
+        border-radius: 5px;
+        padding: 1em;
+        color: #149CFA;
+        background: #E8F5FF;
+        }
+    </style>
+    <window sizable="true" border="none" title="Menu"  width="400px">
+ 
+        <div sclass="grid" height="100%">
+            <button label="Mantenimiento Libros" onClick="redirectToIndexPage()"/>
+            <button label="Mantenimiento Autores" onClick="redirectToAutorsPage()"/>
+            <button label="Mantenimiento Generos" onClick="redirectToGenrePage()"/>
+            <button label="Reportes" onClick="redirectToReportsPage()"/>
+        </div>
+    </window>
+    <zscript>
+    <![CDATA[
+        import org.zkoss.zk.ui.Executions;
+
+        public void redirectToIndexPage() {
+            Executions.sendRedirect("Mantenimientos/index.zul");
+        }
+
+        public void redirectToAutorsPage() {
+            Executions.sendRedirect("Mantenimientos/Autor.zul");
+        }
+
+        public void redirectToReportsPage() {
+            Executions.sendRedirect("Mantenimientos/Report.zul");
+        }
+
+        public void redirectToGenrePage() {
+            Executions.sendRedirect("Mantenimientos/Genre.zul");
+        }
+    ]]>
+    </zscript>
+</zk>
