@@ -4,10 +4,8 @@
  */
 package Controllers;
 
-import DAO.BookDAO;
 import DAO.GenreDAO;
 import Helpers.DateTimeHelper;
-import Models.Book;
 import Models.Genre;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -200,11 +198,11 @@ public class GenreController extends BaseController {
                 cell.setParent(item);
 
                 cell = new Listcell();
-                cell.setLabel(DateTimeHelper.getDateFormat(genre.getCreated()));
+                cell.setLabel(DateTimeHelper.getDateTimeFormat(genre.getCreated()));
                 cell.setParent(item);
 
                 cell = new Listcell();
-                cell.setLabel(genre.getUpdated() != null ? DateTimeHelper.getDateFormat(genre.getUpdated()) : "");
+                cell.setLabel(genre.getUpdated() != null ? DateTimeHelper.getDateTimeFormat(genre.getUpdated()) : "");
                 cell.setParent(item);
 
             });

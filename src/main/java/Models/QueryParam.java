@@ -41,7 +41,8 @@ public class QueryParam {
     }
 
     private String compareIfParamIsText(String key) {
-        if (key.equals("b.book") || key.equals("genre")) {
+        if (key.equals("b.book") || key.equals("genre")
+                || key.equals("autor")) {
             return key + " LIKE CONCAT('%',?,'%')";
         }
         return key + "=?";

@@ -4,9 +4,11 @@
  */
 package Controllers;
 
+import DAO.AutorDAO;
 import Helpers.DateTimeHelper;
 import DAO.BookDAO;
 import DAO.GenreDAO;
+import Models.Autor;
 import Models.Book;
 import Models.Genre;
 import java.sql.SQLException;
@@ -47,7 +49,7 @@ public class CrudController extends BaseController {
 
     //Chield Window
     private Textbox txtBook;
-    private Textbox txtAutor;
+    private Combobox txtAutor;
     private Textbox txtISBN;
     private Textbox txtNoPages;
     private Combobox cbxGenre;
@@ -79,7 +81,7 @@ public class CrudController extends BaseController {
 
     public void getChieldWindowComponents() {
         txtBook = (Textbox) wdwBook.getFellow("txtBook");
-        txtAutor = (Textbox) wdwBook.getFellow("txtAutor");
+        txtAutor = (Combobox) wdwBook.getFellow("txtAutor");
         txtISBN = (Textbox) wdwBook.getFellow("txtISBN");
         txtNoPages = (Textbox) wdwBook.getFellow("txtNoPages");
         cbxGenre = (Combobox) wdwBook.getFellow("cbxGenre");
@@ -97,6 +99,7 @@ public class CrudController extends BaseController {
     public void onClick$mnuAdd() {
         clean();
         loadGenres(cbxGenre);
+        loadAutors();
         wdwBook.setTitle("Save Book");
         wdwBook.setVisible(true);
     }
@@ -104,7 +107,7 @@ public class CrudController extends BaseController {
     public void onClick$mnuDel() {
         if (lbxBooks.getSelectedItem() != null) {
             Book book = (Book) lbxBooks.getSelectedItem().getValue();
-            Messagebox.show("¿Está seguro de eliminar el Genero: " + book.getBook()+ "?", "Confirmacion",
+            Messagebox.show("¿Está seguro de eliminar el Genero: " + book.getBook() + "?", "Confirmacion",
                     Messagebox.YES + Messagebox.NO, Messagebox.QUESTION, event -> {
                         try {
                             int res = Integer.parseInt(String.valueOf(event.getData()));
@@ -126,12 +129,13 @@ public class CrudController extends BaseController {
 
     public void onClick$mnuEdit() {
         if (lbxBooks.getSelectedItem() != null) {
-            loadGenres(cbxGenre);
             clean();
+            loadGenres(cbxGenre);
+            loadAutors();
             Book book = (Book) lbxBooks.getSelectedItem().getValue();
             wdwBook.setTitle("Edit Book");
-            txtBook.setValue(book.getBook());
-            txtAutor.setValue(book.getAutor());
+            //txtBook.setValue(book.getBook());
+            txtAutor.setValue(book.getAutor().toString());
             txtISBN.setValue(book.getISBN().toString());
             cbxGenre.getItems().stream()
                     .filter(comboitem -> ((Genre) comboitem.getValue()) != null)
@@ -187,7 +191,8 @@ public class CrudController extends BaseController {
         valid();
         if (wdwBook.getTitle().contains("Save")) {
             Genre gen = (Genre) cbxGenre.getSelectedItem().getValue();
-            BookDAO.getInstance().insert(getConnection(), txtBook.getValue(), txtAutor.getValue(), Integer.parseInt(txtISBN.getValue()), Integer.parseInt(txtNoPages.getValue()),
+            Autor aut = (Autor) txtAutor.getSelectedItem().getValue();
+            BookDAO.getInstance().insert(getConnection(), txtBook.getValue(), aut.getId(), Integer.parseInt(txtISBN.getValue()), Integer.parseInt(txtNoPages.getValue()),
                     gen.getId(), cbxStatus.getSelectedIndex());
             Messagebox.show("Se guardó el libró: " + txtBook.getValue());
         } else {
@@ -227,9 +232,16 @@ public class CrudController extends BaseController {
                 cell.setLabel(book.getBook());
                 cell.setParent(item);
 
-                cell = new Listcell();
-                cell.setLabel(book.getAutor());
-                cell.setParent(item);
+                try {
+                    cell = new Listcell();
+                    cell.setLabel(AutorDAO.getInstance().getAutorById(getConnection(),
+                            book.getAutor().toString()).getAutor());
+                    cell.setParent(item);
+                } catch (SQLException ex) {
+                    Logger.getLogger(CrudController.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (NamingException ex) {
+                    Logger.getLogger(CrudController.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
                 try {
                     cell = new Listcell();
@@ -255,11 +267,11 @@ public class CrudController extends BaseController {
                 cell.setParent(item);
 
                 cell = new Listcell();
-                cell.setLabel(DateTimeHelper.getDateFormat(book.getCreated()));
+                cell.setLabel(DateTimeHelper.getDateTimeFormat(book.getCreated()));
                 cell.setParent(item);
 
                 cell = new Listcell();
-                cell.setLabel(book.getUpdated() != null ? DateTimeHelper.getDateFormat(book.getUpdated()) : "");
+                cell.setLabel(book.getUpdated() != null ? DateTimeHelper.getDateTimeFormat(book.getUpdated()) : "");
                 cell.setParent(item);
 
             });
@@ -274,8 +286,8 @@ public class CrudController extends BaseController {
         if (txtBook.getValue() == null || txtBook.getValue().isBlank()) {
             txtBook.setErrorMessage("Debe especificar el nombre del libro");
         }
-        if (txtAutor.getValue() == null || txtAutor.getValue().isBlank()) {
-            txtAutor.setErrorMessage("Debe especificar el nobmre del autor");
+        if (txtAutor.getSelectedIndex() < 0) {
+            txtAutor.setErrorMessage("Debe seleccionar un autor");
         }
         if (txtISBN.getValue() == null || txtISBN.getValue().isBlank()) {
             txtISBN.setErrorMessage("Debe especificar el isbn");
@@ -304,12 +316,30 @@ public class CrudController extends BaseController {
     public void clean() {
         cbxGenre.setSelectedIndex(-1);
         txtBook.setValue("");
-        txtAutor.setValue("");
+        txtAutor.setSelectedIndex(-1);
         txtISBN.setValue("");
         txtNoPages.setValue("");
         cbxGenre.setSelectedIndex(-1);
         cbxStatus.setSelectedIndex(-1);
         cbxGenre.setSelectedIndex(-1);
+    }
+
+    private void loadAutors() {
+        txtAutor.getItems().clear();
+        List<Autor> autorsDB;
+        try {
+            autorsDB = AutorDAO.getInstance().getAutorToCbx(getConnection());
+            autorsDB.stream().forEach(autor -> {
+                Comboitem item = new Comboitem();
+                item.setLabel(autor.getAutor());
+                item.setValue(autor);
+                item.setParent(txtAutor);
+            });
+        } catch (SQLException ex) {
+            Logger.getLogger(CrudController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NamingException ex) {
+            Logger.getLogger(CrudController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void loadGenres(Combobox cbx) {

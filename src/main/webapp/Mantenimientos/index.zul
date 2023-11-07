@@ -60,8 +60,8 @@
                         <textbox id="txtBook" width="250px" placeholder="Ingrese nombre del libro"/>
                     </row>
                     <row style="background:transparent;">
-                        <label value="Autor:"/>
-                        <textbox id="txtAutor" width="250px" placeholder="Ingrese nombre del Autor"/>
+                        <label value="Autor"/>
+                        <combobox id="txtAutor" readonly="true"/>
                     </row>
                     <row style="background:transparent;">
                         <label value="ISBN:"/>

@@ -41,7 +41,9 @@ public class BookDAO {
     public List<Book> getBooks(Connection cnx) {
         try {
             return queryR.query(cnx, "SELECT b.id, b.book, b.autor, b.ISBN, b.no_pages, b.genre, b.status, b.created, b.updated "
-                    + "FROM BOOK b LEFT JOIN GENRE g ON g.id = b.genre WHERE g.status = ?", new BeanListHandler<>(Book.class), 1);
+                    + "FROM BOOK b LEFT JOIN GENRE g ON g.id = b.genre "
+                    + "LEFT JOIN AUTOR a ON a.id = b.autor "
+                    + "WHERE g.status = ? AND a.status = 1", new BeanListHandler<>(Book.class), 1);
         } catch (SQLException ex) {
             Logger.getLogger(GenreDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -51,8 +53,10 @@ public class BookDAO {
     public List<Book> getBooksWithParams(Connection cnx, HashMap<String, String> params) {
         try {
             QueryParam queryParams = new QueryParam(params);
-            return queryR.query(cnx, "SELECT b.id, b.book, b.autor, b.ISBN, b.no_pages, b.genre, b.status, b.created, b.updated FROM BOOK "
-                    + "b LEFT JOIN GENRE g ON g.id = b.genre WHERE " + queryParams.getQuery() + " AND g.status = 1",
+            return queryR.query(cnx, "SELECT b.id, b.book, b.autor, b.ISBN, b.no_pages, b.genre, b.status, b.created, b.updated FROM BOOK b "
+                    + "LEFT JOIN GENRE g ON g.id = b.genre "
+                    + "LEFT JOIN AUTOR a ON a.id = b.autor "
+                    + "WHERE " + queryParams.getQuery() + " AND g.status = 1 AND a.status = 1",
                     new BeanListHandler<>(Book.class), queryParams.getParams());
         } catch (SQLException ex) {
             Logger.getLogger(GenreDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -60,7 +64,7 @@ public class BookDAO {
         return new ArrayList<>();
     }
 
-    public void insert(Connection cnx, String libro, String autor, int isbn, int paginas, long id_genero, int estado) throws SQLException {
+    public void insert(Connection cnx, String libro, Long autor, int isbn, int paginas, long id_genero, int estado) throws SQLException {
         queryR.insert(cnx, "INSERT INTO BOOK (book, ISBN, autor, no_pages, status, genre) VALUES (?, ?, ?, ?, ?, ?)",
                 new ScalarHandler<Long>(), libro, isbn, autor, paginas, estado, id_genero);
     }

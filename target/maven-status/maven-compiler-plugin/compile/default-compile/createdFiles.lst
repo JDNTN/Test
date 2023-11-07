@@ -1,11 +1,14 @@
 Controllers/BaseController.class
+Controllers/ReportController.class
 Models/Book.class
 DAO/GenreDAO.class
 Models/Genre.class
+Controllers/AutorController.class
 Controllers/CrudController.class
-Controllers/GenreController.class
 Models/QueryParam.class
-Models/Autor.class
 Helpers/DateTimeHelper.class
+DAO/AutorDAO.class
+Controllers/GenreController.class
+Models/Autor.class
 DAO/BookDAO.class
 danton/Test/MyViewModel.class

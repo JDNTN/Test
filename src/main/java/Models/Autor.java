@@ -4,6 +4,7 @@
  */
 package Models;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.Data;
 
@@ -15,8 +16,18 @@ import lombok.Data;
 public class Autor {
     
     private Long id;
-    private String name;
-    private String country;
+    private String autor;
     private Date birthday;
     private String company;
+    private Integer status;
+    private LocalDateTime created;
+    private LocalDateTime updated;
+
+    public Autor(Long id, String name) {
+        this.id = id;
+        this.autor = name;
+    }
+
+    public Autor() {
+    }
 }

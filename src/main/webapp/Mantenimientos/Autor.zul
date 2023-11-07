@@ -7,7 +7,7 @@
         border-top:none;
         }
     </style>
-    <window id="wndCrud" border="none" width="100%" height="100%" contentStyle="padding: 0 0;" apply="Controllers.CrudController">
+    <window id="wndAutor" border="none" width="100%" height="100%" contentStyle="padding: 0 0;" apply="Controllers.AutorController">
         <hbox width="100%">
             <vbox width="100%">
                 <label value="CRUD - Autores"/>
@@ -17,10 +17,65 @@
         <vbox vflex="true" width="100%" style="margin-top:25px:margin-bottom:-17px;">
             <div>
                 <label value="Nombre:" />
-                <textbox id="txtSearchGenre" width="250px" placeholder="Ingrese nombre del Genero"/>
+                <textbox id="txtSearchAutor" width="250px" placeholder="Ingrese nombre del Autor"/>
+                <label value="Estado" />
+                <combobox id="cbxSearchStatus" readonly="true">
+                    <comboitem value="-1" label="Todos" class="texto"/>
+                    <comboitem value="1" label="Alta" class="texto"/>
+                    <comboitem value="2" label="Baja" class="texto"/>
+                </combobox>
                 <button label="Menu" onClick="redirectToIndexPage()"/>
             </div>
+            <listbox id="lbxAutor" hflex="true" vflex="true" context="mnuContextual" style="margin-top:25px">
+                <listhead>
+                    <listheader label="Nombre"/>
+                    <listheader label="Fecha de Nacimiento"/>
+                    <listheader label="Compañia"/>
+                    <listheader label="Estado"/>
+                    <listheader label="Creacion"/>
+                    <listheader label="Ult. Modificación"/>
+                </listhead>
+            </listbox>
+            <paging id="pgLbxAutor" hflex="true" mold="default" detailed="true" class="pag" />
         </vbox>
+        <menupopup id="mnuContextual">
+            <menuitem id="mnuAdd" label="Agregar"/>
+            <menuitem id="mnuEdit" label="Editar"/>
+            <menuitem id="mnuDel" label="Eliminar"/>
+        </menupopup>
+        <window id="wdwActionsAutor" mode="modal" width="500px" visible="false" border="normal" position="center" closable="true">
+            <grid style="border:none;">
+                <columns>
+                    <column width="145px"/>
+                    <column/>
+                </columns>
+                <rows>
+                    <row style="background:transparent;">
+                        <label value="Nombre:"/>
+                        <textbox id="txtAutor" width="250px" placeholder="Ingrese nombre del libro"/>
+                    </row>
+                    <row style="background:transparent;">
+                        <label value="Fecha de Nacimiento:"/>
+                        <datebox id="dbxBirthday" cols="12" format="short " onCreate="self.value = new Date()" />
+                    </row>
+                    <row style="background:transparent;">
+                        <label value="Empresa:"/>
+                        <textbox id="txtCompany" width="250px" placeholder="Ingrese nombre del libro"/>
+                    </row>
+                    <row style="background:transparent;">
+                        <label value="Estado:" class="texto"/>
+                        <combobox id="cbxStatus" readonly="true">
+                            <comboitem value="1" label="Alta" class="texto"/>
+                            <comboitem value="2" label="Baja" class="texto"/>
+                        </combobox>
+                    </row>
+                </rows>
+            </grid>
+            <div style="margin-top:15px">
+                <button id="btnSave" label="Guardar" autodisable="self"/>
+                <button id="btnCancel" label="Cancel" autodisable="self"/>
+            </div>
+        </window>
     </window>
     <zscript>
     <![CDATA[
